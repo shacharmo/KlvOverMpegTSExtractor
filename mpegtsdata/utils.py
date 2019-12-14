@@ -17,7 +17,7 @@ def is_packet_start(data):
 def get_timestamp(data, index):
     timestamp = (read_unsigned_int_be(data, index, 1) & 0x0E) * 536870912
     timestamp += (read_unsigned_int_be(data, index + 1, 2) & 0xFFFE) * 16384
-    timestamp += read_unsigned_int_be(data, index + 3, 2) / 2
+    timestamp += int(read_unsigned_int_be(data, index + 3, 2) / 2)
     return timestamp
 
 

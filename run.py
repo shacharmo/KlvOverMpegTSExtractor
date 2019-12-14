@@ -17,10 +17,14 @@ def extract_mpegts(path):
     for key in streams_packets:
         packets = streams_packets[key]
         print(f'key=0x{key:X}, packets: {len(packets)}')
-        klv_data, total_klv_packets = reconstruct_klv_packets(packets)
+        klv_data, pts_per_packet = reconstruct_klv_packets(packets)
+        total_klv_packets = len(pts_per_packet)
         if total_klv_packets:
             print(f'Reconstructed packets: {total_klv_packets}')
+            index = 0
             for packet in klvdata.StreamParser(klv_data):
+                print(f'Packet pts: {pts_per_packet[index]}')
+                index += 1
                 packet.structure()
                 packet.validate()
 
