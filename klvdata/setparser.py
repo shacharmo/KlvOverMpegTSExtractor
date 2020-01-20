@@ -62,6 +62,8 @@ class SetParser(Element, metaclass=ABCMeta):
                 self.items[key] = self.parsers[key](value)
             except KeyError:
                 self.items[key] = self._unknown_element(key, value)
+            except:
+                pass  # TODO do something clever
 
     @classmethod
     def add_parser(cls, obj):
@@ -129,18 +131,21 @@ class SetParser(Element, metaclass=ABCMeta):
         repeat(self.items.values())
 
     def validate(self):
-        data = self.key + self.length + self.value
-        bcc = 0
-        size = len(data) - 2
-        for i in range(size):
-            bcc += data[i] << (8 * ((i + 1) % 2))
+        try:
+            data = self.key + self.length + self.value
+            bcc = 0
+            size = len(data) - 2
+            for i in range(size):
+                bcc += data[i] << (8 * ((i + 1) % 2))
 
-        bcc = bcc & 0xffff
-        bcc_value = f'0x{bcc:04X}'
-        crc_value = str(self.items[b'\x01'].value)
+            bcc = bcc & 0xffff
+            bcc_value = f'0x{bcc:04X}'
+            crc_value = str(self.items[b'\x01'].value)
 
-        is_valid = crc_value == bcc_value
-        print(f'Is valid: {is_valid}, Calculated CRC: {bcc_value}, CRC value: {crc_value}')
+            is_valid = crc_value == bcc_value
+            print(f'Is valid: {is_valid}, Calculated CRC: {bcc_value}, CRC value: {crc_value}')
+        except Exception as e:
+            print(f'Cannot validate: {e}')
 
 
 def str_dict(values):
