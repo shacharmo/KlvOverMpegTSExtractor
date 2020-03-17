@@ -35,7 +35,7 @@ class StreamParser:
         self.source = source
 
         # All keys in parser are expected to be 16 bytes long.
-        self.iter_stream = KLVParser(self.source, key_length=16)
+        self.iter_stream = KLVParser(self.source, key_length=11)
 
     def __iter__(self):
         return self

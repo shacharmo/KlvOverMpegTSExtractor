@@ -132,7 +132,7 @@ class SetParser(Element, metaclass=ABCMeta):
 
     def validate(self):
         try:
-            data = self.key + self.length + self.value
+            data = b'\x06\x0e\x2b\x34\x02' + self.key + self.length + self.value
             bcc = 0
             size = len(data) - 2
             for i in range(size):

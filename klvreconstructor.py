@@ -1,7 +1,7 @@
 import binascii
 
+# universal_key = binascii.unhexlify('060e2b34020b0101')
 universal_key = binascii.unhexlify('060e2b34020b0101')
-
 
 def reconstruct_klv_packets(packets):
     """
