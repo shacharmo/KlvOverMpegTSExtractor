@@ -14,9 +14,11 @@ def reconstruct_klv_packets(packets):
     buffer = b''
     i_buffer = b''
     pts_per_packet = []
+    start_indicators = 0
 
     for packet in packets:
         if packet["payload_unit_start_indicator"]:
+            start_indicators += 1
             if is_found and len(i_buffer):
                 for x in klvdata.StreamParser(i_buffer):
                     print('intm start')
@@ -33,4 +35,5 @@ def reconstruct_klv_packets(packets):
         elif is_found:
             buffer += packet['payload']
             i_buffer += packet['payload']
+    print(f'Total packets: {len(packets)}, Start indicator: {start_indicators}')
     return buffer, pts_per_packet

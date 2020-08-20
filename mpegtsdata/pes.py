@@ -24,13 +24,18 @@ def extract_pes(data):
         'additional_copy_info_flag': (optional_header & 0x04) != 0,
         'crc_flag': (optional_header & 0x02) != 0,
         'extension_flag': (optional_header & 0x01) != 0,
-        'header_data_length': read_unsigned_int_be(data, 8, 1)
+        'header_data_length': read_unsigned_int_be(data, 8, 1),
+        'data_index': 9 if optional_header else 6
     }
 
     if pes['pts_dts_flags'] & 0x2:
         pes['pts'] = get_timestamp(data, 9)
+        pes['data_index'] = 14
 
     if pes['pts_dts_flags'] & 0x1:
         pes['dts'] = get_timestamp(data, 14)
+        pes['data_index'] = 19
+
+    pes['data_size'] = len(data) - pes['data_index']
 
     return pes
