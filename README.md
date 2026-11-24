@@ -42,3 +42,21 @@ python run.py -f [file.klv] -k
 ```bash
 python run.py -f [file.ts]
 ```
+
+### Validating KLV metadata
+Adding `-v` validates the file's KLV metadata with
+[misb-check](https://crates.io/crates/misb) before extraction.  
+It checks, among other things, mandatory tags, checksums, value sizes
+against ST 0601 and physically impossible position/slant-range
+combinations, and fails (exit code 1) on invalid files.  
+Validation works on both MPEG-TS and extracted KLV binary files and is
+independent of the extraction itself, so it also reports on files the
+extractor cannot parse.  
+When misb-check is not installed the validation step is skipped with a
+notice. Install it with:
+```bash
+cargo install misb
+```
+```bash
+python run.py -f [file.ts] -v
+```

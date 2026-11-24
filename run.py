@@ -1,4 +1,7 @@
 import argparse
+import shutil
+import subprocess
+import sys
 import klvdata
 import mpegtsdata
 from klvreconstructor import reconstruct_klv_packets
@@ -29,14 +32,37 @@ def extract_mpegts(path):
                 packet.validate()
 
 
+def validate(path):
+    """Validate the file's KLV metadata with misb-check, when available.
+
+    Works on both MPEG-TS and extracted KLV binary files, independently of
+    the extraction above. Returns the misb-check exit code, or 0 when the
+    binary is not installed.
+    """
+    misb_check = shutil.which('misb-check')
+    if misb_check is None:
+        print('misb-check not found on PATH, skipping validation.')
+        print('Install it with: cargo install misb')
+        return 0
+    print(f'Validating {path} with misb-check...', flush=True)
+    return subprocess.run([misb_check, path]).returncode
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', help='File stream to extract', required=True)
     parser.add_argument('-k', '--klv', help='Is file KLV (true) or MPEG-TS (false, default)',
                         default=False, action='store_true')
+    parser.add_argument('-v', '--validate', help='Validate KLV metadata with misb-check '
+                        '(https://crates.io/crates/misb) before extraction',
+                        default=False, action='store_true')
     args = parser.parse_args()
+
+    exit_code = validate(args.file) if args.validate else 0
 
     if args.klv:
         extract_klv(args.file)
     else:
         extract_mpegts(args.file)
+
+    sys.exit(exit_code)
